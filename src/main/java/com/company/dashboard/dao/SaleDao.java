@@ -18,14 +18,26 @@ public class SaleDao {
     }
 
     public void saveOrUpdateSale(Sale saving) {
-
+        Session session = getSessionFactory().openSession();
+        Transaction t = session.beginTransaction();
+        session.saveOrUpdate(saving);
+        t.commit();
+        session.close();
     }
 
     public Sale getSale(int id) {
-        return null;
+        return (Sale) getSessionFactory().openSession()
+                .createCriteria(Sale.class)
+                .add(Restrictions.eq("id", id))
+                .uniqueResult();
     }
 
     public void deleteSale(int id) {
-
+        Sale deleting = getSale(id);
+        Session session = sessionFactory.openSession();
+        Transaction t = session.beginTransaction();
+        session.delete(deleting);
+        t.commit();
+        session.close();
     }
 }

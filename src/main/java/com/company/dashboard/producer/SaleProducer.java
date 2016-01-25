@@ -15,11 +15,18 @@ public class SaleProducer implements Runnable{
     }
 
     protected Sale produce() {
-        return null;
+        Sale sale = new Sale((int) (Math.random() * 10000) + 1);
+        return sale;
     }
 
     @Override
     public void run() {
-
+        try {
+            Long duration = (long) (Math.random()*3);
+            TimeUnit.SECONDS.sleep(duration);
+            sales.add(produce());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

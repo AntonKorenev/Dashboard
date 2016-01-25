@@ -18,11 +18,19 @@ public class SaleProcessor implements Runnable{
     }
 
     protected void process(Sale sale) {
-
+        Sale saleFromDb = saleDao.getSale(sale.getId());
+        if(saleFromDb != null) sale.setPrice(sale.getPrice() + saleFromDb.getPrice());
+        saleDao.saveOrUpdateSale(sale);
+        System.out.println(sales.size() + " objects for processing remained");
+        SaleDashboardPublisher.publish(sale);
     }
 
     @Override
     public void run() {
-
+        while(!Thread.currentThread().isInterrupted()){
+            if(sales.peek() != null) {
+                process(sales.poll());
+            }
+        }
     }
 }
