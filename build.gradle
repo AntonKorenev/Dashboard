@@ -1,0 +1,32 @@
+group 'com.company'
+version '1.0-SNAPSHOT'
+def SPRING_VERSION = '4.2.2.RELEASE'
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.5
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-all:1.9.5'
+
+    compile 'mysql:mysql-connector-java:5.1.6'
+    compile 'org.hibernate:hibernate-core:5.0.4.Final'
+    compile 'org.hibernate:hibernate-validator:5.2.2.Final'
+    compile 'javax.validation:validation-api:1.0.0.GA'
+    compile 'javax.transaction:jta:1.1'
+    compile 'javax.el:javax.el-api:2.2.4'
+
+    compile 'org.springframework:spring-webmvc:' + SPRING_VERSION
+    compile 'org.springframework:spring-context:'+ SPRING_VERSION
+    compile 'org.springframework:spring-test:' + SPRING_VERSION
+    compile 'org.springframework:spring-core:' + SPRING_VERSION
+    compile 'org.springframework:spring-beans:' + SPRING_VERSION
+    compile 'org.springframework:spring-expression:' + SPRING_VERSION
+    compile 'org.springframework:spring-jdbc:' + SPRING_VERSION
+    compile 'org.springframework:spring-orm:' + SPRING_VERSION
+}
