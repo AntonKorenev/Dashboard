@@ -20,11 +20,24 @@ public class Main {
             SaleProducer producer = (SaleProducer) context.getBean("saleProducer");
             executor.execute(producer);
         }
-        executor.shutdown();
+
 
         SaleProcessor saleProcessor = (SaleProcessor) context.getBean("saleProcessor");
         Thread processorThread = new Thread(saleProcessor);
         processorThread.start();
+
+        long d = 20;
+        try {
+            TimeUnit.SECONDS.sleep(d);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        for (int i = 0; i < 20; i++) {
+            SaleProducer producer = (SaleProducer) context.getBean("saleProducer");
+            executor.execute(producer);
+        }
+        executor.shutdown();
 
         long duration = 30;
         try {

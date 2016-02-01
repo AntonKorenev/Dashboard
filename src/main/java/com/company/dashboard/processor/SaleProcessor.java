@@ -28,8 +28,16 @@ public class SaleProcessor implements Runnable{
     @Override
     public void run() {
         while(!Thread.currentThread().isInterrupted()){
-            if(sales.peek() != null) {
+            if(!sales.isEmpty()) {
                 process(sales.poll());
+            } else {
+                try {
+                    synchronized (sales) {
+                        sales.wait();
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
