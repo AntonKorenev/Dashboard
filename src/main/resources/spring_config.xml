@@ -55,6 +55,8 @@
                 <prop key="hibernate.current_session_context_class">thread</prop>
                 <prop key="hibernate.show_sql">false</prop>
                 <prop key="hibernate.id.new_generator_mappings">false</prop>
+                <prop key="hibernate.c3p0.min_size">1</prop>
+                <prop key="hibernate.c3p0.max_size">10</prop>
             </props>
         </property>
     </bean>

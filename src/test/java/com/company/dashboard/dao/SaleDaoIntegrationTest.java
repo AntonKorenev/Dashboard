@@ -24,10 +24,12 @@ public class SaleDaoIntegrationTest {
     ApplicationContext applicationContext;
 
     @Test
-    public void bDaoUpdateAndGetSale() {
+    public void bDaoIncrementAndReturnSale() {
         Sale testSale = new Sale(9000);
-        saleDao.saveOrUpdateSale(testSale);
-        Assert.assertEquals(saleDao.getSale(id), testSale);
+        Sale fromDb = saleDao.incrementAndGet(testSale);
+        Assert.assertNotNull(fromDb);
+        Assert.assertFalse(fromDb.getPrice() - testSale.getPrice() < 0);
+        Assert.assertEquals(saleDao.getSale(id), fromDb);
     }
 
     @Test

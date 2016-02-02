@@ -1,6 +1,7 @@
 package com.company.dashboard.dao;
 
 import com.company.dashboard.domain.Sale;
+import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -17,19 +18,36 @@ public class SaleDao {
         return sessionFactory;
     }
 
-    public void saveOrUpdateSale(Sale saving) {
+    public Sale incrementAndGet(Sale addSale) {
+        System.out.println(addSale.getPrice());
+
         Session session = getSessionFactory().openSession();
         Transaction t = session.beginTransaction();
-        session.saveOrUpdate(saving);
+
+        Sale saleSum = (Sale) session.get(Sale.class, addSale.getId(), LockMode.PESSIMISTIC_WRITE);
+        if(saleSum == null) {
+            saleSum = new Sale(0);
+        }
+
+        saleSum.setPrice(saleSum.getPrice() + addSale.getPrice());
+        session.saveOrUpdate(saleSum);
+
         t.commit();
+        session.refresh(saleSum);
         session.close();
+
+        return  saleSum;
     }
 
     public Sale getSale(int id) {
-        return (Sale) getSessionFactory().openSession()
-                .createCriteria(Sale.class)
+        Session session = getSessionFactory().openSession();
+        Transaction t = session.beginTransaction();
+        Sale sale = (Sale) session.createCriteria(Sale.class)
                 .add(Restrictions.eq("id", id))
                 .uniqueResult();
+        t.commit();
+        session.close();
+        return sale;
     }
 
     public void deleteSale(int id) {

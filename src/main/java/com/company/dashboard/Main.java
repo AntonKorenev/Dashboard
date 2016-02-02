@@ -16,11 +16,11 @@ public class Main {
                 new ClassPathXmlApplicationContext("spring_config.xml");
 
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
+
         for (int i = 0; i < 20; i++) {
             SaleProducer producer = (SaleProducer) context.getBean("saleProducer");
             executor.execute(producer);
         }
-
 
         SaleProcessor saleProcessor = (SaleProcessor) context.getBean("saleProcessor");
         Thread processorThread = new Thread(saleProcessor);
@@ -33,7 +33,7 @@ public class Main {
             e.printStackTrace();
         }
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 200; i++) {
             SaleProducer producer = (SaleProducer) context.getBean("saleProducer");
             executor.execute(producer);
         }
