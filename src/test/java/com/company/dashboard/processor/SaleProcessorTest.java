@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("classpath:spring_config.xml")
@@ -32,7 +30,7 @@ public class SaleProcessorTest {
         ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
 
         Sale beforeSale = saleDao.getSale(1);
-        if(beforeSale == null) beforeSale = new Sale(0);
+        if (beforeSale == null) beforeSale = new Sale(0);
 
         for (int i = 0; i < 5; i++) {
             executor.execute(saleProducer);
@@ -53,5 +51,50 @@ public class SaleProcessorTest {
 
         Assert.assertNotNull(afterSale);
         Assert.assertFalse(afterSale.getPrice() < beforeSale.getPrice());
+    }
+
+    @Test
+    public void properValueInDatabaseTest() {
+        //getting current value
+        //saleDao.deleteSale(1);
+        int beforeSale = saleDao.incrementAndGet(new Sale(0)).getPrice();
+
+        //filling sale queue
+        LinkedBlockingQueue<Sale> testSaleQueue = new LinkedBlockingQueue<>();
+        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
+        for (int i = 0; i < 10000; i++) {
+            SaleProducer producer = new SaleProducer(testSaleQueue);
+            executor.execute(producer);
+        }
+        executor.shutdown();
+
+        try {
+            TimeUnit.SECONDS.sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        int sum = testSaleQueue.stream().mapToInt((sale) -> sale.getPrice()).sum();
+
+
+        ScheduledExecutorService scheduler =
+                Executors.newScheduledThreadPool(1);
+
+        Thread processorThread = new Thread(new SaleProcessor(saleDao, testSaleQueue));
+        processorThread.start();
+
+        try {
+            TimeUnit.SECONDS.sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        processorThread.interrupt();
+
+        int afterSale = saleDao.getSale(1).getPrice();
+
+        System.out.println("before=" + beforeSale);
+        System.out.println("after=" + afterSale);
+        System.out.println("sum=" + sum);
+
+        Assert.assertEquals(afterSale, beforeSale + sum);
     }
 }

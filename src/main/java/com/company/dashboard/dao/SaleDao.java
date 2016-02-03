@@ -19,13 +19,11 @@ public class SaleDao {
     }
 
     public Sale incrementAndGet(Sale addSale) {
-        System.out.println(addSale.getPrice());
-
         Session session = getSessionFactory().openSession();
         Transaction t = session.beginTransaction();
 
         Sale saleSum = (Sale) session.get(Sale.class, addSale.getId(), LockMode.PESSIMISTIC_WRITE);
-        if(saleSum == null) {
+        if (saleSum == null) {
             saleSum = new Sale(0);
         }
 
@@ -36,7 +34,7 @@ public class SaleDao {
         session.refresh(saleSum);
         session.close();
 
-        return  saleSum;
+        return saleSum;
     }
 
     public Sale getSale(int id) {
