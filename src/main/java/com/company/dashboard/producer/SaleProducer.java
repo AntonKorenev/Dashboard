@@ -25,9 +25,6 @@ public class SaleProducer implements Runnable{
             Long duration = (long) (Math.random()*3);
             TimeUnit.SECONDS.sleep(duration);
             sales.add(produce());
-            synchronized (sales) {
-                sales.notify();
-            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
